@@ -1,0 +1,76 @@
+{
+ "gpu": "none",
+ "kind": "head",
+ "name": "postcontrast-fusion",
+ "slot": "site",
+ "task": "axis:post_contrast",
+ "speed": {
+  "cpu": {
+   "note": "T23: the fusion is served inside the cascade postcontrast-cascade@c1-fs3-m and measured only there; this is the cascade's stage-1 rate on the CPU alone, T1-type brain candidates at calibrated sites a second over the speed sample's whole sessions (29,238 MR stacks, 4,207 candidates, each given a fused probability) in 1,221.5 s, model loading included. The fusion's own arithmetic is under a millisecond a stack (the speed study's round 1, ims-r1-pc); in the full pipeline it answers at that pipeline's rate",
+   "evidence": "mi-t23",
+   "hardware": "32 worker processes reading slices, the student on torch's default threads, in the research container (64 cores of an AMD EPYC 9745 host, 256 GB), the archive over NFS 4.2, cold on the client; the served image nils-postcontrast (one image: torch 2.8.0 from its CUDA 12.8 wheels) on the CPU in float32, as the engine's apptainer runner runs it",
+   "stacks_per_second": 3.44
+  }
+ },
+ "digest": "sha256:8f7c7d7915608c596fcc96ff7372306ce97cf1d2f289c49a5657f5268a810fb3",
+ "limits": [
+  "Trained on the group's own data: a site model, never exported and never in a release (spec 10.6)",
+  "Answers only at the four calibrated sites (cohort as the archive folder, make); every other site is not sure",
+  "Arithmetic per stack on the CPU: no card"
+ ],
+ "params": {
+  "from": "model-r1/fit/frozen/model.pkl (model r1's frozen fusion)",
+  "what": "model r1's frozen fusion (StandardScaler, logistic regression, per-site Platt pairs) over the image arms' logits and the stack's header evidence, exported from its pickle (pcs-parts)",
+  "source_sha256": "sha256:f37c1934a8f415e0d5a56fda28de729f9bf7141e6079f546fe4c4ee8ad01f791"
+ },
+ "tested": [
+  {
+   "n": 650,
+   "note": "bar 1 %, passed; the test frame answered 747 of 775 (96.4 %); the 40 hidden controls all agree",
+   "bound": "0.46 % (exact one-sided 95 % upper)",
+   "claim": "model r1 (its frozen arms T, U and V and this fusion, per-site calibration, t 0.90), wrong among answered T1-type brain stacks of its test read (the test frame at scanners held out by a registered seed, no test subject in training), against reader N's reads (the certificate)",
+   "value": "0 of 650",
+   "evidence": "postcontrast-model-r1-test-score"
+  },
+  {
+   "n": 329,
+   "bound": "0.91 % (exact one-sided 95 % upper)",
+   "claim": "the same where pack 0.15's rules are empty (reported apart, not a pass condition)",
+   "value": "0 of 329",
+   "evidence": "postcontrast-model-r1-test-score"
+  },
+  {
+   "n": 655,
+   "note": "iaid GE 0.0007 (32), iaid Siemens 0.0038 (528), multiple_ms Philips 0.0 (95); descriptive (the bar of at most 0.05 a site, study.md G1, is no pass condition of this test)",
+   "bound": null,
+   "claim": "model r1's calibrated probability on the read candidates: expected calibration error, all and by calibrated site",
+   "value": 0.0031,
+   "evidence": "postcontrast-model-r1-test-score"
+  },
+  {
+   "n": 3977,
+   "note": "class I passed, none over 0.001; the difference holds the student's numerics too (seed outputs within 0.0625), so it bounds the export's own difference from above",
+   "bound": "largest fused probability difference 0.00037 (D-dev) and 0.0000059 (D-seal)",
+   "claim": "the served fusion (fusion.json as nils-postcontrast 0.1.0 reads it) over the served student's outputs against the frozen cascade (model r1's pickled fusion over the frozen seeds) on D-dev and D-seal (test A): answers",
+   "value": "D-dev 2,003 of 2,003 and D-seal 1,974 of 1,974 equal",
+   "evidence": "pcs-grade"
+  }
+ ],
+ "encoder": {
+  "name": "postcontrast-student",
+  "digest": "sha256:8116417e28bf1dfc69796a0db834305c961ac0946d39cbaf3f62b1c164f8357d",
+  "version": "pc-student3"
+ },
+ "version": "r1",
+ "artifact": {
+  "bytes": 2503,
+  "format": "json"
+ },
+ "threshold": 0.9,
+ "trained_on": {
+  "name": "postcontrast-r1-train",
+  "rows": 2558,
+  "label_set": "sha256:e38499aff41600712fe588bdd92db344011a3d6e3178000c40884848587f0c30"
+ },
+ "intended_use": "The fusion the cascade and the full pipeline both end in; it reads the arms' logits, from the student in the cascade and from the image arms in the full pipeline (encoder names the student, as the engine's kinds have a head read an encoder)"
+}

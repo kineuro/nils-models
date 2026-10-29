@@ -1,0 +1,145 @@
+{
+ "gpu": "none",
+ "kind": "head",
+ "name": "bodypart-fusion",
+ "slot": "site",
+ "task": "axis:body_part",
+ "speed": {
+  "cpu": {
+   "note": "measured as the cascade bodypart-cascade@r7-fast end to end, which is how this part is served; A5.2.3e, round 1's four blocks pooled (11,081 scored stacks, 32 and 64 workers), cold on the client (the storage server held these blocks): 5.21 h for the 544,972-stack frame. big-1 on the CPU at 32 workers, read third, ran 34.3 a second (4.42 h). Before the overlap A5.3 measured 19.5 a second (ims-a53-bp). The head alone costs 0.34 ms a stack on one thread (round 5, part 2)",
+   "evidence": "ims-a523e-bp",
+   "hardware": "64 cores of an AMD EPYC 9745 host, 256 GB of memory, the archive over NFS 4.2; CPU only; nils-bodypart 0.5.0 (the overlap, its start in the workers), CPU build, torch 2.13.0",
+   "stacks_per_second": 29.1
+  },
+  "gpu": null
+ },
+ "digest": "sha256:be4d44c5982887b4774ea9f8570016be1f75daba27cc31eaa9ba69c14fba0a8a",
+ "limits": [
+  "New patients, from hospitals and scanners seen in training (round 7: the untouched subjects of iaid, multiple_ms, als, ctrl, broms and nmosd)",
+  "Fine mode only: six body_part values; answers at or above 0.897 after the calibration below, abstains below it (0.68 of stacks on round 7 T)",
+  "A stack without geometry or without a fingerprint gets no answer (an abstention)",
+  "Trained on patient pixels: a site model, never exported, never in a release (record 50 study, section 8)",
+  "neck against cervical spine follows G2 as Nima ruled on 2026-09-29; the neck class is rare after it",
+  "Runs on the CPU only (LightGBM); a card changes nothing for it"
+ ],
+ "params": {
+  "combiner": "LightGBM 300 trees, lr 0.03, 15 leaves, min 20 per leaf, feature and bagging fraction 0.8, class weights 1/sqrt(n)",
+  "features": "the encoder six log-probabilities (clipped at 1e-6) and round 3 44 header features, with the rules columns",
+  "calibration": {
+   "rule": "a cohort with at least 20 read stacks in round 7 (S and T) uses its own temperature, fitted on them; any other uses the global one",
+   "min_n": 20,
+   "per_cohort": {
+    "als": {
+     "T": 2.043552397662649,
+     "n": 47
+    },
+    "ctrl": {
+     "T": 1.9108936477540517,
+     "n": 40
+    },
+    "iaid": {
+     "T": 1.9632306556175907,
+     "n": 395
+    },
+    "broms": {
+     "T": null,
+     "n": 13
+    },
+    "nmosd": {
+     "T": null,
+     "n": 5
+    },
+    "multiple_ms": {
+     "T": 2.504792193724438,
+     "n": 89
+    }
+   },
+   "global_fine": 1.6638490189458275,
+   "global_coarse": 0.9617393379132885
+  },
+  "training_labels": {
+   "file": "gold_r7.tsv (research)",
+   "note": "the same rows as the registered label set bodypart-gold-r7 that trained_on names, keyed there by DICOM identity",
+   "rows": 3659,
+   "sites": 16,
+   "sha256": "5b471b6918b54f9bbabe21a1f90d4253ad5ee5896e59a15d7ada5f0c049b897c"
+  }
+ },
+ "tested": [
+  {
+   "n": 442,
+   "bound": null,
+   "claim": "fine mode on round 7's test T at 0.897: weighted coverage",
+   "value": 0.6793,
+   "evidence": "bodypart-r7-read"
+  },
+  {
+   "n": 253,
+   "bound": null,
+   "claim": "fine mode on round 7's test T at 0.897: weighted error among answered stacks",
+   "value": 0.0138,
+   "evidence": "bodypart-r7-read"
+  },
+  {
+   "n": 253,
+   "note": "bound is the registered bar",
+   "bound": 0.05,
+   "claim": "fine mode on round 7's test T at 0.897: per-site ECE",
+   "value": 0.0183,
+   "evidence": "bodypart-r7-read"
+  },
+  {
+   "n": 253,
+   "bound": 0.0032,
+   "claim": "brain or spine, model minus rules, at 0.897: the difference and its lower 95 % bound (bar at least -0.02)",
+   "value": 0.0111,
+   "evidence": "bodypart-r7-read"
+  },
+  {
+   "n": 442,
+   "note": "bound is the registered minimum",
+   "bound": 30,
+   "claim": "spine stacks in T",
+   "value": 137,
+   "evidence": "bodypart-r7-read"
+  }
+ ],
+ "metrics": {
+  "T_spine": 137,
+  "T_fine_full": {
+   "ece": 0.028764310748109506,
+   "accuracy": 0.8873182185594887
+  },
+  "T_fine_at_threshold": {
+   "n": 253,
+   "ece": 0.018339704624174478,
+   "error": 0.013771965492502813,
+   "coverage": 0.6793166919657254,
+   "brain_or_spine_diff": 0.011072216463386119,
+   "brain_or_spine_ci_low": 0.003219133061998215
+  }
+ },
+ "version": "r7",
+ "artifact": {
+  "bytes": 3162798,
+  "format": "other"
+ },
+ "encoders": [
+  {
+   "name": "bodypart-tiny",
+   "digest": "sha256:32cf3bd3a7d510c21d14939a4d02240e0c4852876a776a4a828e1d6822103a17",
+   "version": "r7"
+  }
+ ],
+ "threshold": 0.897,
+ "trained_on": {
+  "name": "bodypart-gold-r7",
+  "rows": 3659,
+  "label_set": "sha256:96e60922dd33623a28f5e8b54dfbbbbf4c31b78d3c8c8659b88e8899ff3336a5"
+ },
+ "intended_use": "Propose body_part per MR stack at the site; a proposal at or above the threshold is staged for a person to commit, below it a review item",
+ "pack_version": "mri@0.12.0",
+ "preprocessing": {
+  "version": "bpthumb-vol-8mm-64:v1+header44:r3"
+ }
+}

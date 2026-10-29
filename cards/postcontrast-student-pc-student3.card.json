@@ -1,0 +1,105 @@
+{
+ "gpu": "optional",
+ "kind": "encoder",
+ "name": "postcontrast-student",
+ "slot": "site",
+ "task": "features:postcontrast_slices",
+ "speed": {
+  "cpu": {
+   "note": "T23: T1-type brain candidates at calibrated sites a second, stage 1 over the speed sample's whole sessions (29,238 MR stacks, 4,207 candidates) in 1,221.5 s, model loading included, peak memory 9.78 GiB. pcs-speed's 5.51 had the student on 16 threads beside the 32 readers. The descriptor's default is 8 workers (cores 8), fewer than measured here; the student is measured only inside the cascade, and this is the cascade's stage-1 rate",
+   "evidence": "mi-t23",
+   "hardware": "32 worker processes reading slices, the student on torch's default threads, in the research container (64 cores of an AMD EPYC 9745 host, 256 GB), the archive over NFS 4.2, cold on the client; the served image nils-postcontrast (one image: torch 2.8.0 from its CUDA 12.8 wheels) on the CPU in float32, as the engine's apptainer runner runs it",
+   "stacks_per_second": 3.44
+  },
+  "gpu": {
+   "note": "T23: as on the CPU, 76.9 s, the card's memory 2,607 MiB above its start, peak memory 7.34 GiB; pcs-speed measured 42.27 a second on card 1 with the research environment. The descriptor's default is 8 workers (cores 8), fewer than measured here; the student is measured only inside the cascade, and this is the cascade's stage-1 rate",
+   "evidence": "mi-t23",
+   "hardware": "32 worker processes reading slices, in the research container (64 cores of an AMD EPYC 9745 host, 256 GB), the archive over NFS 4.2, cold on the client; card 1, an RTX PRO 6000 Blackwell 96 GB under the lease, shared with a staff process at 99 to 100 % use; the same served image, the student under bfloat16 autocast (--nv)",
+   "stacks_per_second": 54.72
+  }
+ },
+ "digest": "sha256:8116417e28bf1dfc69796a0db834305c961ac0946d39cbaf3f62b1c164f8357d",
+ "limits": [
+  "Trained on the group's own data: a site model, never exported and never in a release (spec 10.6)",
+  "No registered label set: its training rows and targets are named by sha256 in card-numbers.json (trained_on) until the label-sets door registers them",
+  "On the CPU alone, the package changed 1 of 2,003 scans' answers in its graded test A (pcs-grade, 2026-10-14); the admission pair (106 stacks) shows none, so the class stays II with this flip stated."
+ ],
+ "params": {
+  "what": "the three-slice student of the post-contrast speed study's round 4 (cascade c1-fs3-m's stage 1): three seeds that predict model r1's three image arms from three native slices chosen from each file's geometry",
+  "image": "nils-postcontrast 0.1.0, torch 2.8.0 (one image for the CPU and a card)",
+  "numerics": "bfloat16 autocast on a card, float32 on the CPU, as the study ran it",
+  "seeds_sha256": {
+   "model-s20261005.pt": "c160fa1b15064a026cc22ec67bad646689f0ea73d2dbfc4677c18bb40017d94b",
+   "model-s20261006.pt": "5e7343c888702250bdcf5483e7720fb7e0246588af7f51eb361127896c2cbcf2",
+   "model-s20261007.pt": "7a5ead15ac43127e6be83ec92145104fb97940d569fae56d43c3c72acc334efd"
+  }
+ },
+ "tested": [
+  {
+   "n": 4211,
+   "note": "each seed's best-validation weights are the model (epochs 26, 9 and 24); the student is judged through the cascade, whose card carries model r1's certificate",
+   "bound": null,
+   "claim": "best validation loss of each seed on round 4's val role (the squared error of model r1's three arm logits where each arm is available, plus the cross-entropy of their availability; amendment 2's loss)",
+   "value": "3.6168, 3.7905 and 3.7138 (seeds 20261005, 20261006 and 20261007)",
+   "evidence": "pcr4-train"
+  },
+  {
+   "n": 3724,
+   "note": "where m was chosen, the smallest of the grid that meets the rule (m = 3: 12 of 3,783, 0.513 %); not a held-out test",
+   "bound": "0.455 % (exact one-sided 95 % upper; the val rule's bar 0.5 %)",
+   "claim": "as the cascade's stage 1 (three seeds agree, margin m from the threshold) on round 4's val role against model r1's answers: accepted stacks whose answer differs (the val rule)",
+   "value": "10 of 3,724 accepted (of 4,217) at m = 4",
+   "evidence": "pcr4-dev"
+  },
+  {
+   "n": 1876,
+   "note": "127 of D-dev's 2,003 usable stacks went to the fallback; the cascade passed class III on D-dev (E1 1,999 of 2,003, lower bound 99.544 %)",
+   "bound": null,
+   "claim": "as stage 1 of c1-fs3-m on the development draw D-dev against model r1, scored once at screening: accepted stacks whose answer differs from model r1's",
+   "value": "4 of 1,876 (1 not given to given, 3 not sure to given)",
+   "evidence": "pcr4-dev"
+  },
+  {
+   "n": 1854,
+   "note": "120 of D-seal's 1,974 usable stacks went to the fallback; the cascade's class III grade (E1 1,970 of 1,974, lower bound 99.537 %) is on the cascade's card",
+   "bound": null,
+   "claim": "as stage 1 of c1-fs3-m on the sealed draw D-seal against model r1, scored once: accepted stacks whose answer differs from model r1's",
+   "value": "4 of 1,854, each where model r1 was not sure (2 given, 2 not given); 0 flips",
+   "evidence": "pcr4-seal"
+  },
+  {
+   "n": 4023,
+   "note": "test A's bar, class I on the cascade's answers and accept decisions, passed",
+   "bound": "largest seed output difference 0.0625",
+   "claim": "the served student (student.safetensors in nils-postcontrast 0.1.0, on the card under bfloat16 autocast, reading its own slices from the files) against the frozen seeds on D-dev and D-seal (test A): stage-1 accept decisions",
+   "value": "every one equal (1,885 of D-dev's 2,020 and 1,874 of D-seal's 2,003 stage-1 stacks accepted by both)",
+   "evidence": "pcs-grade"
+  },
+  {
+   "n": 4023,
+   "note": "reported, no bar; the card's equivalence (class II) and its limits state it",
+   "bound": "largest seed output difference 1.05 (D-dev) and 0.86 (D-seal)",
+   "claim": "the same with the student on the CPU in float32 (test A-cpu)",
+   "value": "accept decisions differ on 2 of D-dev's 2,020 and 5 of D-seal's 2,003 stage-1 stacks; 1 answer of D-dev's 2,003 changed (not given to given), D-seal's 1,974 all equal",
+   "evidence": "pcs-grade"
+  }
+ ],
+ "version": "pc-student3",
+ "artifact": {
+  "bytes": 56040188,
+  "format": "safetensors"
+ },
+ "trained_on": {
+  "name": "postcontrast-student-train",
+  "rows": 9160,
+  "label_set": "sha256:896405636fa7588dd4ba30d7a539c5056d815bb4df5a31fdd4c1e13fbb5119fd"
+ },
+ "equivalence": {
+  "set": "round 4's speed sample, 994 stacks, the student on the CPU in float32 against the card under bfloat16 autocast",
+  "note": "the cascade's: every answer and stage-1 accept decision equal, fused probabilities within 0.027 (3 over 0.01). Over both of the served study's draws the production package on the CPU is not class II: one not given became given of 2,003 on D-dev, and 2 and 5 accept decisions differ (pcs-grade, test A-cpu), so a site that runs it on a CPU alone runs a measurably different model there",
+  "class": "II",
+  "evidence": "pcr4-speed",
+  "tolerance": 0.027
+ },
+ "intended_use": "Stage 1 of the post-contrast cascade postcontrast-cascade@c1-fs3-m, which names it among its parts: never served alone"
+}

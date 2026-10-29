@@ -1,0 +1,81 @@
+{
+ "gpu": "optional",
+ "kind": "encoder",
+ "name": "bodypart-tiny",
+ "slot": "site",
+ "task": "features:bodypart_image",
+ "speed": {
+  "cpu": {
+   "note": "the network alone, scored from cached planes (round 1, R5 and R6); a stack read from DICOM costs its reading and decoding on top, which the cascade's card states",
+   "evidence": "ims-r1-bp",
+   "hardware": "64 cores of an AMD EPYC 9745 host, 256 GB of memory, the archive over NFS 4.2; numpy, 64 processes",
+   "stacks_per_second": 5080
+  },
+  "gpu": {
+   "note": "the network alone, scored from cached planes; in the served cascade the encoder runs on the CPU in the readers' workers",
+   "evidence": "ims-r1-bp",
+   "hardware": "64 cores of an AMD EPYC 9745 host, 256 GB of memory, the archive over NFS 4.2, card: RTX PRO 6000 Blackwell (96 GB, sm_120) under the lease; torch fp32 (the research build)",
+   "stacks_per_second": 11074
+  }
+ },
+ "digest": "sha256:32cf3bd3a7d510c21d14939a4d02240e0c4852876a776a4a828e1d6822103a17",
+ "limits": [
+  "New patients, from hospitals and scanners seen in training (round 7: the untouched subjects of iaid, multiple_ms, als, ctrl, broms and nmosd)",
+  "Fine mode only: six body_part values; answers at or above 0.897 after the calibration below, abstains below it (0.68 of stacks on round 7 T)",
+  "A stack without geometry or without a fingerprint gets no answer (an abstention)",
+  "Trained on patient pixels: a site model, never exported, never in a release (record 50 study, section 8)",
+  "neck against cervical spine follows G2 as Nima ruled on 2026-09-29; the neck class is rare after it"
+ ],
+ "params": {
+  "arch": "tiny2d",
+  "batch": 128,
+  "seeds": 3,
+  "steps": 600,
+  "recipe": "round 3 R0c; round5.md part 1"
+ },
+ "tested": [
+  {
+   "n": 253,
+   "note": "the encoder is certified only inside the head; see that card",
+   "bound": null,
+   "claim": "as part of bodypart-fusion@r7: fine mode at 0.897 on round 7's test T, weighted error among answered stacks",
+   "value": 0.0138,
+   "evidence": "bodypart-r7-read"
+  },
+  {
+   "n": 18801,
+   "bound": null,
+   "claim": "scored from the plane cache with numpy against the certified run of the day, on the screen: every answer and probability identical (class I)",
+   "value": "I",
+   "evidence": "ims-r1-bp"
+  },
+  {
+   "n": 18801,
+   "bound": 0.001,
+   "claim": "torch fp32 on the card against the certified run: every answer identical, largest calibrated-probability difference",
+   "value": 0.000522,
+   "evidence": "ims-r1-bp"
+  }
+ ],
+ "version": "r7",
+ "artifact": {
+  "bytes": 641280,
+  "format": "safetensors"
+ },
+ "trained_on": {
+  "name": "bodypart-gold-r7",
+  "rows": 3659,
+  "label_set": "sha256:96e60922dd33623a28f5e8b54dfbbbbf4c31b78d3c8c8659b88e8899ff3336a5"
+ },
+ "equivalence": {
+  "set": "the screen role's 18,801 stacks, from their cached planes (round 1, 3.2)",
+  "note": "torch fp32 on the card against numpy on the CPU: answers identical, largest probability difference 0.000522 fine and 0.000472 coarse",
+  "class": "I",
+  "evidence": "ims-r1-bp",
+  "tolerance": 0.001
+ },
+ "intended_use": "The image component of bodypart-fusion@r7: six body-part log-probabilities per stack from its 8 mm volume and geometry",
+ "preprocessing": {
+  "version": "bpthumb-vol-8mm-64:v1"
+ }
+}

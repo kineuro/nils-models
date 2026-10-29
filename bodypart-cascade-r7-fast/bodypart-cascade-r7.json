@@ -1,0 +1,42 @@
+{
+ "cascade": "bodypart-cascade",
+ "certified": "bodypart-fusion@r7, fine and coarse (record 50)",
+ "equivalence": "round 3 (README R3.1): class III against the certified model on the screen",
+ "parts": {
+  "coarse": "sha256:315e8f296d2351a23dd78c405fe1a0bad630f8c57825e81b5d98296fe3297789",
+  "deferral": "sha256:c58f51878e384c0a61104b705b7cfdf6c55f56dfcb0c06bc87551209878bf675",
+  "encoder": "sha256:32cf3bd3a7d510c21d14939a4d02240e0c4852876a776a4a828e1d6822103a17",
+  "head": "sha256:be4d44c5982887b4774ea9f8570016be1f75daba27cc31eaa9ba69c14fba0a8a",
+  "student": "sha256:74d19c4b3d286c9802661fd6535ff0e16676be8bd521745ab033ed890e8044b6"
+ },
+ "registered": "nils-design studies/2026-10-05-image-model-speed/plan.md, amendment 5",
+ "stages": [
+  {
+   "accepts": {
+    "deferral_at_least": 0.99
+   },
+   "input": "bodypart-slice-192:v1",
+   "model": "student",
+   "stage": "s1"
+  },
+  {
+   "accepts": {
+    "margin_logit_at_least": 0.5
+   },
+   "input": "bodypart-planes-b24:v1",
+   "model": "encoder",
+   "stage": "b24"
+  },
+  {
+   "accepts": "always",
+   "input": "bodypart-planes-touched:v1",
+   "model": "encoder",
+   "stage": "touched"
+  }
+ ],
+ "thresholds": {
+  "coarse": 0.9152,
+  "fine": 0.897
+ },
+ "version": "r7-fast"
+}

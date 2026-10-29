@@ -1,0 +1,34 @@
+{
+ "classes": [
+  "head",
+  "spine",
+  "chest",
+  "other"
+ ],
+ "coarse_T_per_cohort": {
+  "als": 1.3978255850412356,
+  "broms": 0.9617393379132885,
+  "ctrl": 0.9840433290399054,
+  "iaid": 1.1513173524688098,
+  "multiple_ms": 1.3764284349377232,
+  "nmosd": 0.9617393379132885
+ },
+ "coarse_global_T": 0.9617393379132885,
+ "fine_global_T": 1.6638490189458275,
+ "head": {
+  "digest": "sha256:be4d44c5982887b4774ea9f8570016be1f75daba27cc31eaa9ba69c14fba0a8a",
+  "name": "bodypart-fusion",
+  "version": "r7"
+ },
+ "map": {
+  "brain": "head",
+  "brain-neck": "head",
+  "chest": "chest",
+  "neck": "spine",
+  "other": "other",
+  "spine": "spine"
+ },
+ "mode": "coarse",
+ "recipe": "the head six probabilities at its fine global temperature, summed over the map, then the coarse temperature (per cohort where given, else global)",
+ "threshold": 0.9152
+}

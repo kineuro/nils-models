@@ -1,0 +1,161 @@
+{
+ "gpu": "optional",
+ "kind": "head",
+ "name": "postcontrast-cascade",
+ "slot": "site",
+ "task": "axis:post_contrast",
+ "parts": {
+  "arms": "sha256:a93140b6e5e220c0a8b51b98b87b392d8746ec1fdca15108850e4369876b4342",
+  "fusion": "sha256:8f7c7d7915608c596fcc96ff7372306ce97cf1d2f289c49a5657f5268a810fb3",
+  "student": "sha256:8116417e28bf1dfc69796a0db834305c961ac0946d39cbaf3f62b1c164f8357d"
+ },
+ "speed": {
+  "cpu": {
+   "note": "T23: T1-type brain candidates at calibrated sites a second, stage 1 over the speed sample's whole sessions (29,238 MR stacks, 4,207 candidates) in 1,221.5 s, model loading included, peak memory 9.78 GiB. pcs-speed's 5.51 had the student on 16 threads beside the 32 readers. The descriptor's default is 8 workers (cores 8), fewer than measured here",
+   "evidence": "mi-t23",
+   "hardware": "32 worker processes reading slices, the student on torch's default threads, in the research container (64 cores of an AMD EPYC 9745 host, 256 GB), the archive over NFS 4.2, cold on the client; the served image nils-postcontrast (one image: torch 2.8.0 from its CUDA 12.8 wheels) on the CPU in float32, as the engine's apptainer runner runs it",
+   "stacks_per_second": 3.44
+  },
+  "gpu": {
+   "note": "T23: as on the CPU, 76.9 s, the card's memory 2,607 MiB above its start, peak memory 7.34 GiB; pcs-speed measured 42.27 a second on card 1 with the research environment. The descriptor's default is 8 workers (cores 8), fewer than measured here",
+   "evidence": "mi-t23",
+   "hardware": "32 worker processes reading slices, in the research container (64 cores of an AMD EPYC 9745 host, 256 GB), the archive over NFS 4.2, cold on the client; card 1, an RTX PRO 6000 Blackwell 96 GB under the lease, shared with a staff process at 99 to 100 % use; the same served image, the student under bfloat16 autocast (--nv)",
+   "stacks_per_second": 54.72
+  }
+ },
+ "digest": "sha256:3d7e85169eed73ee318a601f9932b70726f01c697e7d17bc826c10e02a182004",
+ "limits": [
+  "Trained on the group's own data: a site model, never exported and never in a release (spec 10.6)",
+  "answers only at the four calibrated sites: iaid GE, iaid Philips, iaid Siemens, multiple_ms Philips (cohort as the archive folder, make); every other site is not sure (reason no-calibration)",
+  "stage 1 runs without model r1's ratio-pair tier; on production inputs (test B) the package keeps 99.55 % (D-dev) and 99.59 % (D-seal) of the frozen cascade's answers, every change to not sure",
+  "the header evidence is read from today's registry (rules, words, clock); round 1 read pack 0.15's rules answers; the effect is test B of pcs-grade",
+  "about 6 % of T1-type brain stacks are deferred to the full pipeline (postcontrast-full), whose pinned image is not built yet; until it is, a deferred stack stays not sure (reason deferred)",
+  "no registered label set yet (spec 10.3 is the label-sets slice); the student's training rows and targets are named by their sha256 until it is",
+  "Since nils-postcontrast 0.2.0 the fallback (postcontrast-full) says not sure, with the reason no-usable-volume or no-segmentation, for a deferred stack left with no image arm because it has no usable volume or no segmentation after the card, its retry and the CPU, where model r1 would answer from its header evidence alone, which no test compared with a reference (record 55 E3, 2026-10-14)",
+  "On the CPU alone, the package changed 1 of 2,003 scans' answers in its graded test A (pcs-grade, 2026-10-14); the admission pair (106 stacks) shows none, so the class stays II with this flip stated."
+ ],
+ "params": {
+  "image": "nils-postcontrast 0.1.0, torch 2.8.0 (one image for the CPU and a card)",
+  "stage1": {
+   "k": 3,
+   "m": 4,
+   "rule": "margin",
+   "seeds_agree": true
+  },
+  "fallback": "postcontrast-full (the arms and the fusion)",
+  "registered": "nils-design studies/2026-10-08-postcontrast-speed-r4 (round 4 chose c1-fs3-m) and studies/2026-10-13-postcontrast-served/plan.md"
+ },
+ "tested": [
+  {
+   "note": "bar 1 %; coverage 96.4 %",
+   "bound": "0.46 % (exact one-sided 95 % upper)",
+   "claim": "model r1, wrong among answered T1-type brain stacks (the certificate)",
+   "value": "0 of 650",
+   "evidence": "postcontrast-model-r1-test-score"
+  },
+  {
+   "note": "bar 99.5 %",
+   "bound": "99.537 % (exact one-sided 95 % lower)",
+   "claim": "the cascade against model r1 on the sealed draw D-seal: equal answers (E1)",
+   "value": "1,970 of 1,974 (99.797 %)",
+   "evidence": "pcr4-seal"
+  },
+  {
+   "note": "bar 0.5 %",
+   "bound": "0.158 % (upper)",
+   "claim": "the cascade against model r1 on D-seal: flips between given and not given (E3)",
+   "value": "0 of 1,896",
+   "evidence": "pcr4-seal"
+  },
+  {
+   "note": "bar -0.5 points",
+   "bound": "+0.20 points",
+   "claim": "the cascade against model r1 on D-seal: answered share (E2)",
+   "value": "96.25 % against 96.05 %",
+   "evidence": "pcr4-seal"
+  },
+  {
+   "note": "bar 99.0 %",
+   "claim": "the cascade against model r1 on D-seal: per make (E4)",
+   "value": "Siemens 99.787 % (1,409), GE 99.764 % (423); Philips 140 stacks, under E4's 200",
+   "evidence": "pcr4-seal"
+  },
+  {
+   "note": "also pcr4-seal; bar 1 %",
+   "bound": "0.96 %",
+   "claim": "the cascade's error carried from model r1's certificate",
+   "value": "0.46 % + 0.5 points",
+   "evidence": "postcontrast-model-r1-test-score"
+  },
+  {
+   "note": "bar class I: the same answer always",
+   "bound": "largest fused probability difference 0.00037",
+   "claim": "the production package (nils-postcontrast 0.1.0) against the frozen cascade, class I (test A, the card)",
+   "value": "D-dev 2,003 of 2,003 and D-seal 1,974 of 1,974 answers equal; every stage-1 accept decision equal (1,885 and 1,874 accepted)",
+   "evidence": "pcs-grade"
+  },
+  {
+   "note": "bar none (reported)",
+   "bound": "largest fused probability difference 0.027",
+   "claim": "the production package with the student on the CPU (float32) against the frozen cascade (test A-cpu)",
+   "value": "D-dev 2,002 of 2,003 answers equal (1 not given to given), 2 accept decisions differ; D-seal 1,974 of 1,974 equal, 5 accept decisions differ",
+   "evidence": "pcs-grade"
+  },
+  {
+   "note": "bar none (reported); below round 4's E1 bar of 99.5 %",
+   "bound": "E3 flips 0",
+   "claim": "the production package on production inputs (test B: today's header evidence, no pair tier, site from the dataset name) against the frozen cascade",
+   "value": "D-dev 1,994 of 2,003 (E1 lower 99.217 %), D-seal 1,966 of 1,974 (E1 lower 99.270 %); every change an answer to not sure; changes by cause: candidacy 9 and 8, pair tier 0 and 2",
+   "evidence": "pcs-grade"
+  },
+  {
+   "note": "also pcf-speed (F1's records). Test A's and test B's numbers are unchanged, since these stacks lie outside the 2,003 graded (round 4's reference left them out), and so are the cascade's graded numbers (pcr4-seal), which put model r1's own answers in the fallback's place",
+   "bound": null,
+   "claim": "the fallback's abstention on a stack with no image arm and no usable volume or no segmentation, against the same runs' answers before it: class III by construction (an answer can only become not sure), counted on two runs' records",
+   "value": "development draw (D-dev's full run, 2,020 stacks): 11 answers become not sure (7 no segmentation, 4 no usable volume), 2 not sure stacks take the new reason, nothing else changes; the timed run F1 (377 deferred stacks of the speed sample): 18 answers become not sure (16 and 2), 234 answered become 216",
+   "evidence": "pcf-grade"
+  },
+  {
+   "n": 214,
+   "note": "106 answered on both, 214 scored, 0 differences over 0.027 and 1 over 0.01; 2 deferred stacks differ only in seeds_agree. Against the served study's runs of these stacks: the CPU tables equal byte for byte, the card's decisions equal (largest difference 0.0071)",
+   "bound": 0.027,
+   "claim": "T23, the served image on the CPU (float32) against the card (bfloat16), the card test's sample (3,019 stacks over 119 whole sessions): every answer, stage and reason equal; the largest fused probability difference (the card's tolerance 0.027)",
+   "value": 0.022707,
+   "evidence": "mi-t23"
+  },
+  {
+   "n": 4207,
+   "note": "all three between a stage-1 answer and deferral to the fallback (one deferred on the CPU and answered not given on the card, one given and one not given answered on the CPU and deferred on the card), 0 flips; the largest fused probability difference 0.0243 (0 over 0.027, 76 over 0.001). So class II's same answer does not hold over this set; the changes are between an answer and deferral, as on D-dev and D-seal (pcs-grade, test A-cpu), where one not given became given of 2,003",
+   "bound": null,
+   "claim": "T23, the same on the speed sample (29,238 MR stacks, 4,207 candidates): candidates whose stage-1 decision differs between the CPU and the card",
+   "value": 3,
+   "evidence": "mi-t23"
+  }
+ ],
+ "version": "c1-fs3-m",
+ "artifact": {
+  "bytes": 817,
+  "format": "json"
+ },
+ "encoders": [
+  {
+   "name": "postcontrast-student",
+   "digest": "sha256:8116417e28bf1dfc69796a0db834305c961ac0946d39cbaf3f62b1c164f8357d",
+   "version": "pc-student3"
+  }
+ ],
+ "threshold": 0.9,
+ "trained_on": {
+  "name": "postcontrast-r4-val",
+  "rows": 4217,
+  "label_set": "sha256:57457d6b32257d714674bb44886fed36d0dd0343994d0ddc7dd6321bd37cd837"
+ },
+ "equivalence": {
+  "set": "round 4's speed sample, 994 stacks, the student on the CPU in float32 against the card under bfloat16 autocast",
+  "note": "every answer and stage-1 accept decision equal, fused probabilities within 0.027 (3 over 0.01). Over both of the served study's draws the production package on the CPU is not class II: one not given became given of 2,003 on D-dev, and 2 and 5 accept decisions differ (pcs-grade, test A-cpu), so a site that runs it on a CPU alone runs a measurably different model there",
+  "class": "II",
+  "evidence": "pcr4-speed",
+  "tolerance": 0.027
+ },
+ "intended_use": "post_contrast (given, not given) on T1-type brain stacks (model r1's frame: acquired, non-localizer MR, base T1w, not TOF or PC, not DSC, DCE or CE-MRA, body part brain) of the four calibrated sites; not sure everywhere else"
+}

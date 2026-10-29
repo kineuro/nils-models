@@ -1,0 +1,146 @@
+{
+ "gpu": "none",
+ "kind": "head",
+ "name": "bodypart-fusion-coarse",
+ "slot": "site",
+ "task": "axis:body_region",
+ "speed": {
+  "cpu": {
+   "note": "measured as the cascade bodypart-cascade@r7-fast end to end, which is how this part is served; A5.2.3e, round 1's four blocks pooled (11,081 scored stacks, 32 and 64 workers), cold on the client (the storage server held these blocks): 5.21 h for the 544,972-stack frame. big-1 on the CPU at 32 workers, read third, ran 34.3 a second (4.42 h). Before the overlap A5.3 measured 19.5 a second (ims-a53-bp)",
+   "evidence": "ims-a523e-bp",
+   "hardware": "64 cores of an AMD EPYC 9745 host, 256 GB of memory, the archive over NFS 4.2; CPU only; nils-bodypart 0.5.0 (the overlap, its start in the workers), CPU build, torch 2.13.0",
+   "stacks_per_second": 29.1
+  },
+  "gpu": null
+ },
+ "digest": "sha256:315e8f296d2351a23dd78c405fe1a0bad630f8c57825e81b5d98296fe3297789",
+ "limits": [
+  "New patients, from hospitals and scanners seen in training (round 7: the untouched subjects of iaid, multiple_ms, als, ctrl, broms and nmosd)",
+  "A stack without geometry or without a fingerprint gets no answer (an abstention)",
+  "Trained on patient pixels: a site model, never exported, never in a release (record 50 study, section 8)",
+  "neck against cervical spine follows G2 as Nima ruled on 2026-09-29; the neck class is rare after it",
+  "Coarse mode: answers at or above 0.9152 after the coarse calibration, abstains below it (0.92 of stacks on round 8 T)",
+  "Arithmetic on the head's six probabilities: runs on the CPU only, and a card changes nothing for it"
+ ],
+ "params": {
+  "mode_of": {
+   "name": "bodypart-fusion",
+   "digest": "sha256:be4d44c5982887b4774ea9f8570016be1f75daba27cc31eaa9ba69c14fba0a8a",
+   "version": "r7"
+  },
+  "mode_file": {
+   "map": {
+    "neck": "spine",
+    "brain": "head",
+    "chest": "chest",
+    "other": "other",
+    "spine": "spine",
+    "brain-neck": "head"
+   },
+   "head": {
+    "name": "bodypart-fusion",
+    "digest": "sha256:be4d44c5982887b4774ea9f8570016be1f75daba27cc31eaa9ba69c14fba0a8a",
+    "version": "r7"
+   },
+   "mode": "coarse",
+   "recipe": "the head six probabilities at its fine global temperature, summed over the map, then the coarse temperature (per cohort where given, else global)",
+   "classes": [
+    "head",
+    "spine",
+    "chest",
+    "other"
+   ],
+   "threshold": 0.9152,
+   "fine_global_T": 1.6638490189458275,
+   "coarse_global_T": 0.9617393379132885,
+   "coarse_T_per_cohort": {
+    "als": 1.3978255850412356,
+    "ctrl": 0.9840433290399054,
+    "iaid": 1.1513173524688098,
+    "broms": 0.9617393379132885,
+    "nmosd": 0.9617393379132885,
+    "multiple_ms": 1.3764284349377232
+   }
+  },
+  "training_labels": {
+   "file": "gold_r7.tsv (research)",
+   "note": "the same rows as the registered label set bodypart-gold-r7 that trained_on names, keyed there by DICOM identity",
+   "rows": 3659,
+   "sites": 16,
+   "sha256": "5b471b6918b54f9bbabe21a1f90d4253ad5ee5896e59a15d7ada5f0c049b897c"
+  }
+ },
+ "tested": [
+  {
+   "n": 294,
+   "bound": 0.9655,
+   "claim": "coarse mode on round 8's test T: weighted accuracy and its lower 95 % bound (bar at least 0.93)",
+   "value": 0.9827,
+   "evidence": "bodypart-r8-read"
+  },
+  {
+   "n": 294,
+   "note": "bound is the registered bar",
+   "bound": 0.02,
+   "claim": "coarse mode at 0.9152: weighted error among answered stacks (bar at most 0.02)",
+   "value": 0.0129,
+   "evidence": "bodypart-r8-read"
+  },
+  {
+   "n": 294,
+   "bound": 0.8,
+   "claim": "coarse mode at 0.9152: weighted coverage (bar at least 0.80)",
+   "value": 0.9242,
+   "evidence": "bodypart-r8-read"
+  },
+  {
+   "n": 294,
+   "bound": 0.03,
+   "claim": "coarse mode: per-site ECE (bar at most 0.03)",
+   "value": 0.0115,
+   "evidence": "bodypart-r8-read"
+  },
+  {
+   "n": 294,
+   "bound": -0.02,
+   "claim": "coarse mode minus rules: lower 95 % bound (bar at least -0.02)",
+   "value": -0.0087,
+   "evidence": "bodypart-r8-read"
+  }
+ ],
+ "metrics": {
+  "T_coarse": {
+   "n": 294,
+   "ece": 0.011450473125709562,
+   "spine_n": 78,
+   "accuracy": 0.9827119074569814,
+   "accuracy_ci_low": 0.965474804053905,
+   "vs_rules_ci_low": -0.00868182580868369,
+   "error_at_threshold": 0.012882658958265902,
+   "coverage_at_threshold": 0.9241782380265258
+  }
+ },
+ "version": "r7",
+ "artifact": {
+  "bytes": 842,
+  "format": "json"
+ },
+ "encoders": [
+  {
+   "name": "bodypart-tiny",
+   "digest": "sha256:32cf3bd3a7d510c21d14939a4d02240e0c4852876a776a4a828e1d6822103a17",
+   "version": "r7"
+  }
+ ],
+ "threshold": 0.9152,
+ "trained_on": {
+  "name": "bodypart-gold-r7",
+  "rows": 3659,
+  "label_set": "sha256:96e60922dd33623a28f5e8b54dfbbbbf4c31b78d3c8c8659b88e8899ff3336a5"
+ },
+ "intended_use": "Propose the coarse body region (head, spine, chest, other) per MR stack from the same model as bodypart-fusion@r7",
+ "pack_version": "mri@0.12.0",
+ "preprocessing": {
+  "version": "bpthumb-vol-8mm-64:v1+header44:r3"
+ }
+}

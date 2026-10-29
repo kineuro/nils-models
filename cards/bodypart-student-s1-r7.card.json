@@ -1,0 +1,96 @@
+{
+ "gpu": "optional",
+ "kind": "encoder",
+ "name": "bodypart-student",
+ "slot": "site",
+ "task": "features:bodypart_slice",
+ "speed": {
+  "cpu": {
+   "note": "measured as the cascade bodypart-cascade@r7-fast end to end, which is how this part is served; A5.2.3e, round 1's four blocks pooled (11,081 scored stacks, 32 and 64 workers), cold on the client (the storage server held these blocks): 5.21 h for the 544,972-stack frame. big-1 on the CPU at 32 workers, read third, ran 34.3 a second (4.42 h). Before the overlap A5.3 measured 19.5 a second (ims-a53-bp)",
+   "evidence": "ims-a523e-bp",
+   "hardware": "64 cores of an AMD EPYC 9745 host, 256 GB of memory, the archive over NFS 4.2; CPU only; nils-bodypart 0.5.0 (the overlap, its start in the workers), CPU build, torch 2.13.0",
+   "stacks_per_second": 29.1
+  },
+  "gpu": {
+   "note": "measured as the cascade bodypart-cascade@r7-fast end to end, which is how this part is served; A5.2.3e's primary run, big-1 (25,814 stacks over whole sessions, 25,208 scored), the storage server's first read, cold: 1.29 h for the frame as one container, 1.31 h in 28 parts. Cold, the storage server's file rate holds it (about 1,000 files a second)",
+   "evidence": "ims-a523e-bp",
+   "hardware": "64 cores of an AMD EPYC 9745 host, 256 GB of memory, the archive over NFS 4.2, card: RTX PRO 6000 Blackwell (96 GB, sm_120) under the lease; S1 on the card, 64 workers; nils-bodypart 0.5.0 (the overlap, its start in the workers), card build, torch 2.13.0",
+   "stacks_per_second": 117.2
+  }
+ },
+ "digest": "sha256:74d19c4b3d286c9802661fd6535ff0e16676be8bd521745ab033ed890e8044b6",
+ "limits": [
+  "A part of bodypart-cascade@r7-fast: its answers are accepted only where D3 says so, and the certified reader answers the rest",
+  "Trained on patient pixels: a site model, never exported, never in a release",
+  "A stack without registry geometry or a readable slot-0 slice goes to the planes stages",
+  "Its training set holds stacks of two samples sealed since (final-cert-2-a and -b, sealed 2026-10-04, the day before it trained); see the handover"
+ ],
+ "params": {
+  "k": 1,
+  "loss": "squared error of log(p + 1e-6) plus the KL divergence against the certified encoder's six probabilities",
+  "seeds": [
+   "20261005",
+   "20261006",
+   "20261007"
+  ],
+  "epochs": 6,
+  "freeze": {
+   "file": "freeze-s1.json",
+   "sources_sha256": {
+    "20261005": "3b0adfaaa00c63638f6b0e821824c18e2d77895367a5b2f644fa1b24dfb5e7e1",
+    "20261006": "49fd26c1ab02cf5aa1cd7151fc1810eee30a7198bc934625d8fa9ef3f84502b6",
+    "20261007": "8e3aa116bff940223f1476f266be36703d32e17c7df08a62b78048457e5be49a"
+   }
+  },
+  "network": "the few-slice study's student: EfficientNet-B0 slice encoder, slice and stack geometry tokens, attention pooling, six log-probabilities",
+  "numerics": "fp32 on the CPU and on the card, TF32 off",
+  "parameters": 13993212
+ },
+ "tested": [
+  {
+   "n": 7186,
+   "note": "root mean square log-probability error 0.52; the student is judged only through the cascade, whose card carries the certificate",
+   "bound": null,
+   "claim": "val top-class agreement with the certified encoder (round 2)",
+   "value": 0.982,
+   "evidence": "ims-r2-bp"
+  },
+  {
+   "n": 8607,
+   "note": "5,308 accepted, 2 fine and 2 coarse disagreements with the stored answers",
+   "bound": null,
+   "claim": "stage 1 (S1 with D3 at 0.99) on dev B: accepted share",
+   "value": 0.617,
+   "evidence": "ims-r3-bp"
+  },
+  {
+   "n": 2846,
+   "note": "stacks a second, descriptive",
+   "bound": null,
+   "claim": "S1 alone on the CPU in the run's main process, 32 threads (A5.3, block 4, its S1 phase)",
+   "value": 34.7,
+   "evidence": "ims-a53-bp"
+  }
+ ],
+ "version": "s1-r7",
+ "artifact": {
+  "bytes": 56092748,
+  "format": "safetensors"
+ },
+ "trained_on": {
+  "name": "bodypart-s1-train",
+  "rows": 342937,
+  "label_set": "sha256:8856aec4f92b9ef42361e84845bb6536e34bbc333e32fc591c571d58d5f5506b"
+ },
+ "equivalence": {
+  "set": "round 1's 3,000 card stacks of the screen, over whole studies (3,213 stacks, 3,146 scored): A5.2.3a (b), registered",
+  "note": "as the cascade's stage 1: every stage decision equal on the CPU and on the card; every effective outcome of both modes, every stage decision and every top label equal, every calibrated probability within 0.001. Also class I card against CPU on round 1's four blocks (A5.2.3d, ims-a523d-bp) and, descriptively, on big-1 (A5.2.3e, ims-a523e-bp: 658 of 25,000 tables differ in their bytes, the student's probabilities at most 1e-6 apart and D3's score at most 0.026, every decision the same)",
+  "class": "I",
+  "evidence": "ims-a523a-bp",
+  "tolerance": 0.001
+ },
+ "intended_use": "The first stage of bodypart-cascade@r7-fast: the certified encoder's six probabilities predicted from one native slice and the registry's geometry, read by the certified head; never served alone",
+ "preprocessing": {
+  "version": "bodypart-slice-192:v1"
+ }
+}

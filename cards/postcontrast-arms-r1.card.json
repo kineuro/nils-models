@@ -1,0 +1,53 @@
+{
+ "gpu": "none",
+ "kind": "head",
+ "name": "postcontrast-arms",
+ "slot": "site",
+ "task": "features:postcontrast_arms",
+ "speed": {
+  "cpu": {
+   "note": "the speed study's round 1, run pc-s100-today14: 100 stacks in 1,032.3 s, 329.8 CPU seconds a stack, every answer equal to model r1's frozen ones. The arms' own arithmetic is under a millisecond a stack, so this is the rate of the features they read. The served fallback postcontrast-full was timed only with a card for its tools: 0.1498 a second over the 377 stacks stage 1 deferred in the speed sample (pcf-speed, T25's F1, run t25-20261014T000311); no CPU-alone pass of the served package was measured",
+   "evidence": "ims-r1-pc",
+   "hardware": "14 stacks at a time on the CPU alone in the research container (64 cores of an AMD EPYC 9745 host, 256 GB), the archive over NFS 4.2, cold; model r1's own feature code (N4, SynthSeg, SynthStrip, SynthMorph and the Frangi filter from FreeSurfer's image) feeding these arms",
+   "stacks_per_second": 0.0969
+  }
+ },
+ "digest": "sha256:a93140b6e5e220c0a8b51b98b87b392d8746ec1fdca15108850e4369876b4342",
+ "limits": [
+  "Trained on the group's own data: a site model, never exported and never in a release (spec 10.6)",
+  "Arithmetic per stack on the CPU; the tools that make their features take a card in postcontrast-full, whose speed is on the cascade's card",
+  "The full pipeline's grade against model r1 (its plan's test A) is not on this card until it is graded"
+ ],
+ "params": {
+  "what": "model r1's three frozen image arms (T, U, V) exported to JSON with the HP and VX atlases they were fitted on, inside it byte for byte; the full pipeline (postcontrast-full) computes their features from SynthMorph, SynthSeg and SynthStrip",
+  "atlas_sha256": {
+   "HP": "12a72d9aed013e23db71ba58596c4ee83b55fbdb0ff97f2df993e5f48fae716e",
+   "VX": "e9fd050a076123bb75dcda86355a7e61e953d0fe92c3c47f9625cadbf5ebe0b3"
+  },
+  "source_sha256": "sha256:f37c1934a8f415e0d5a56fda28de729f9bf7141e6079f546fe4c4ee8ad01f791"
+ },
+ "tested": [
+  {
+   "bound": "largest difference 3.3e-16 over 9,232 rows",
+   "claim": "the arms' JSON against model r1's pickle on every row of model r1's table and round 4's reference tables (P1 of the full pipeline's plan): the same availability and every probability within 1e-12",
+   "value": "pass",
+   "evidence": "pcf-parts"
+  }
+ ],
+ "encoder": {
+  "name": "postcontrast-student",
+  "digest": "sha256:8116417e28bf1dfc69796a0db834305c961ac0946d39cbaf3f62b1c164f8357d",
+  "version": "pc-student3"
+ },
+ "version": "r1",
+ "artifact": {
+  "bytes": 525269,
+  "format": "json"
+ },
+ "trained_on": {
+  "name": "postcontrast-r1-train",
+  "rows": 2558,
+  "label_set": "sha256:e38499aff41600712fe588bdd92db344011a3d6e3178000c40884848587f0c30"
+ },
+ "intended_use": "The image arms of model r1 in the post-contrast fallback, postcontrast-full, over the stacks the cascade defers; the cascade names them among its parts (encoder names the student that imitates them, as the engine's kinds have a head read an encoder)"
+}

@@ -1,0 +1,156 @@
+{
+ "gpu": "optional",
+ "kind": "head",
+ "name": "bodypart-cascade",
+ "slot": "site",
+ "task": "axis:body_part",
+ "parts": {
+  "head": "sha256:be4d44c5982887b4774ea9f8570016be1f75daba27cc31eaa9ba69c14fba0a8a",
+  "coarse": "sha256:315e8f296d2351a23dd78c405fe1a0bad630f8c57825e81b5d98296fe3297789",
+  "encoder": "sha256:32cf3bd3a7d510c21d14939a4d02240e0c4852876a776a4a828e1d6822103a17",
+  "student": "sha256:74d19c4b3d286c9802661fd6535ff0e16676be8bd521745ab033ed890e8044b6",
+  "deferral": "sha256:c58f51878e384c0a61104b705b7cfdf6c55f56dfcb0c06bc87551209878bf675"
+ },
+ "speed": {
+  "cpu": {
+   "note": "A5.2.3e, round 1's four blocks pooled (11,081 scored stacks, 32 and 64 workers), cold on the client (the storage server held these blocks): 5.21 h for the 544,972-stack frame. big-1 on the CPU at 32 workers, read third, ran 34.3 a second (4.42 h). Before the overlap A5.3 measured 19.5 a second (ims-a53-bp)",
+   "evidence": "ims-a523e-bp",
+   "hardware": "64 cores of an AMD EPYC 9745 host, 256 GB of memory, the archive over NFS 4.2; CPU only; nils-bodypart 0.5.0 (the overlap, its start in the workers), CPU build, torch 2.13.0",
+   "stacks_per_second": 29.1
+  },
+  "gpu": {
+   "note": "A5.2.3e's primary run, big-1 (25,814 stacks over whole sessions, 25,208 scored), the storage server's first read, cold: 1.29 h for the frame as one container, 1.31 h in 28 parts. Cold, the storage server's file rate holds it (about 1,000 files a second)",
+   "evidence": "ims-a523e-bp",
+   "hardware": "64 cores of an AMD EPYC 9745 host, 256 GB of memory, the archive over NFS 4.2, card: RTX PRO 6000 Blackwell (96 GB, sm_120) under the lease; S1 on the card, 64 workers; nils-bodypart 0.5.0 (the overlap, its start in the workers), card build, torch 2.13.0",
+   "stacks_per_second": 117.2
+  }
+ },
+ "digest": "sha256:e6ebd5390361e5f888f8ac83743559064863c595260455e57a3f4cb4bb26ec33",
+ "limits": [
+  "New patients, from hospitals and scanners seen in training (round 7: the untouched subjects of iaid, multiple_ms, als, ctrl, broms and nmosd)",
+  "Fine mode only: six body_part values; answers at or above 0.897 after the calibration below, abstains below it (0.68 of stacks on round 7 T)",
+  "A stack without geometry or without a fingerprint gets no answer (an abstention)",
+  "Trained on patient pixels: a site model, never exported, never in a release (record 50 study, section 8)",
+  "neck against cervical spine follows G2 as Nima ruled on 2026-09-29; the neck class is rare after it",
+  "Runs on the CPU only (LightGBM); a card changes nothing for it",
+  "The fine answer at or above 0.897, the coarse at or above 0.9152, as the certified model; the cascade abstains where the certified model would",
+  "A stack of a sample sealed now is answered sealed and never read",
+  "Its CPU and GPU speeds depend on the storage's cold file rate and on the share stage 1 accepts (33 % to 86 % across the blocks measured)"
+ ],
+ "params": {
+  "image": "nils-bodypart 0.5.0 with the overlap and its start in the workers (engine pull request 426)",
+  "stages": [
+   {
+    "input": "bodypart-slice-192:v1",
+    "model": "student",
+    "stage": "s1",
+    "accepts": {
+     "deferral_at_least": 0.99
+    }
+   },
+   {
+    "input": "bodypart-planes-b24:v1",
+    "model": "encoder",
+    "stage": "b24",
+    "accepts": {
+     "margin_logit_at_least": 0.5
+    }
+   },
+   {
+    "input": "bodypart-planes-touched:v1",
+    "model": "encoder",
+    "stage": "touched",
+    "accepts": "always"
+   }
+  ],
+  "registered": "nils-design studies/2026-10-05-image-model-speed/plan.md, amendment 5",
+  "thresholds": {
+   "fine": 0.897,
+   "coarse": 0.9152
+  }
+ },
+ "tested": [
+  {
+   "n": 17709,
+   "bound": 0.99674,
+   "claim": "class III against the certified model's stored 0.2.0 answers on G (204 gold-role subjects never in any part's training or the dev set): fine E1 agreement, one-sided exact 95 % lower bound (bar at least 0.995)",
+   "value": 0.99746,
+   "evidence": "ims-a522a-bp"
+  },
+  {
+   "n": 17709,
+   "bound": 0.99777,
+   "claim": "the same, coarse E1",
+   "value": 0.99836,
+   "evidence": "ims-a522a-bp"
+  },
+  {
+   "n": 9511,
+   "bound": 0.00031,
+   "claim": "the same, flips (both answer, values differ), fine: upper 95 % bound (bar at most 0.005)",
+   "value": 0,
+   "evidence": "ims-a522a-bp"
+  },
+  {
+   "n": 14486,
+   "bound": 0.00021,
+   "claim": "the same, flips, coarse: upper 95 % bound",
+   "value": 0,
+   "evidence": "ims-a522a-bp"
+  },
+  {
+   "n": null,
+   "note": "coarse: 1.3 % plus 0.16 points, 1.46 %; certified on bodypart-r7-read and bodypart-r8-read",
+   "bound": 0.02,
+   "claim": "the certificate carried over: worst-case fine error (1.19 % certified plus 0.25 points), against the 2 % bar",
+   "value": 0.0144,
+   "evidence": "ims-a522a-bp"
+  },
+  {
+   "n": 18801,
+   "bound": null,
+   "claim": "the image on torch 2.13.0 against the graded build's answers on the screen (class I)",
+   "value": "I",
+   "evidence": "ims-a523a-bp"
+  },
+  {
+   "n": 10047,
+   "bound": null,
+   "claim": "the overlap with its start off the main process against the sequential path, round 1's four blocks, card and CPU (class I, every table byte for byte)",
+   "value": "I",
+   "evidence": "ims-a523e-bp"
+  }
+ ],
+ "version": "r7-fast",
+ "artifact": {
+  "bytes": 1231,
+  "format": "json"
+ },
+ "encoders": [
+  {
+   "name": "bodypart-tiny",
+   "digest": "sha256:32cf3bd3a7d510c21d14939a4d02240e0c4852876a776a4a828e1d6822103a17",
+   "version": "r7"
+  },
+  {
+   "name": "bodypart-student",
+   "digest": "sha256:74d19c4b3d286c9802661fd6535ff0e16676be8bd521745ab033ed890e8044b6",
+   "version": "s1-r7"
+  }
+ ],
+ "threshold": 0.897,
+ "trained_on": {
+  "name": "bodypart-d3-dev",
+  "rows": 59388,
+  "label_set": "sha256:0f68c5f2abe0085554312de8d98509de149d0203f02cb3125a9d991c0131f41b"
+ },
+ "equivalence": {
+  "set": "round 1's 3,000 card stacks of the screen, over whole studies (3,213 stacks, 3,146 scored): A5.2.3a (b), registered",
+  "note": "every effective outcome of both modes, every stage decision and every top label equal, every calibrated probability within 0.001. Also class I card against CPU on round 1's four blocks (A5.2.3d, ims-a523d-bp) and, descriptively, on big-1 (A5.2.3e, ims-a523e-bp: 658 of 25,000 tables differ in their bytes, the student's probabilities at most 1e-6 apart and D3's score at most 0.026, every decision the same)",
+  "class": "I",
+  "evidence": "ims-a523a-bp",
+  "tolerance": 0.001
+ },
+ "intended_use": "Propose body_part (fine) and, through its coarse part, body_region per MR stack at the site, from few native slices where its deferral model accepts and the certified reader elsewhere; a proposal at or above the threshold is staged for a person to commit",
+ "pack_version": "mri@0.12.0"
+}

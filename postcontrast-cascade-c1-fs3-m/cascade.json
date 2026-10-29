@@ -1,0 +1,25 @@
+{
+ "name": "c1-fs3-m",
+ "stage1": {
+  "rule": "margin",
+  "m": 4,
+  "k": 3,
+  "cand": "fs3",
+  "seeds_agree": true
+ },
+ "parts": {
+  "student": "sha256:8116417e28bf1dfc69796a0db834305c961ac0946d39cbaf3f62b1c164f8357d",
+  "fusion": "sha256:8f7c7d7915608c596fcc96ff7372306ce97cf1d2f289c49a5657f5268a810fb3"
+ },
+ "threshold": 0.9,
+ "fallback": "postcontrast-full",
+ "source": {
+  "config_sha256": "43a2a424e1c7f2193cd10c2108537e68c7724ceebbc68731a5ae460038580ace",
+  "seeds": {
+   "model-s20261005.pt": "c160fa1b15064a026cc22ec67bad646689f0ea73d2dbfc4677c18bb40017d94b",
+   "model-s20261006.pt": "5e7343c888702250bdcf5483e7720fb7e0246588af7f51eb361127896c2cbcf2",
+   "model-s20261007.pt": "7a5ead15ac43127e6be83ec92145104fb97940d569fae56d43c3c72acc334efd"
+  },
+  "study": "studies/2026-10-08-postcontrast-speed-r4"
+ }
+}
