@@ -12,12 +12,14 @@ Each folder holds one model's file; `cards/` holds each model's card as NILS reg
 | postcontrast-cascade@c1-fs3-m | cascade.json | postcontrast-cascade, postcontrast-full |
 | bodypart-tiny@r7, bodypart-fusion@r7, bodypart-fusion-coarse@r7, bodypart-student@s1-r7, bodypart-defer@d3-r7, bodypart-cascade@r7-fast | as listed | bodypart-infer-fusion |
 
-Register each at your site with its card and its file, then keep the file where runs find it:
+Register each at your site with its card and its file, then keep the file where runs find it. The order matters, since a card names its parts by digest: student, fusion, arms, cascade for post-contrast; tiny, fusion, fusion-coarse, student, defer, cascade for body part.
 
 ```sh
 nils model register --card cards/postcontrast-fusion-r1.card.json --artifact postcontrast-fusion-r1/fusion.json
 nils model keep postcontrast-fusion@r1 --artifact postcontrast-fusion-r1/fusion.json
 ```
+
+Known limit (engine 1.0.0-beta.3 and earlier): `nils model register` refuses a card whose training label set is not in the site's own registry, and these cards name the training site's sets. Registration at another site is being fixed in the engine; until then, ask us.
 
 The post-contrast fusion answers only at the sites it was calibrated for; every other site gets "not sure" until it fits its own pair (`nils-postcontrast calibrate`, since 0.3.0). The cards were written when these were site models kept at one site; the line in each card's limits saying so predates their publication under this licence.
 
