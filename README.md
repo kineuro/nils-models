@@ -19,7 +19,7 @@ nils model register --card cards/postcontrast-fusion-r1.card.json --artifact pos
 nils model keep postcontrast-fusion@r1 --artifact postcontrast-fusion-r1/fusion.json
 ```
 
-Known limit (engine 1.0.0-beta.3 and earlier): `nils model register` refuses a card whose training label set is not in the site's own registry, and these cards name the training site's sets. Registration at another site is being fixed in the engine; until then, ask us.
+Registration at another site: since engine 1.0.0-beta.4, `nils model register` takes a card whose training label set is not in the site's own registry and records it as a foreign training claim, so the model says it was trained on a label set held at the training site. Engines up to 1.0.0-beta.3 refused such a card; update the engine first.
 
 The post-contrast fusion answers only at the sites it was calibrated for; every other site gets "not sure" until it fits its own pair (`nils-postcontrast calibrate`, since 0.3.0). The cards were written when these were site models kept at one site; the line in each card's limits saying so predates their publication under this licence.
 
